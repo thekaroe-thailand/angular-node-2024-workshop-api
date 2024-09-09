@@ -22,4 +22,9 @@ model User {
   status String @default("use") // use, delete
 }
 
-
+model FoodType {
+  id Int @id() @default(autoincrement())
+  name String
+  remark String?
+  status String @default("use") // use, delete
+}
