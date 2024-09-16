@@ -7,12 +7,19 @@ const userController = require("./controllers/UserController");
 const foodTypeController = require("./controllers/FoodTypeController");
 const foodSizeController = require("./controllers/FoodSizeController");
 const tasteController = require("./controllers/TasteController");
+const foodController = require("./controllers/FoodController");
 
 app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.post("/api/food/create", (req, res) => foodController.create(req, res));
+app.put("/api/taste/update", (req, res) => tasteController.update(req, res));
+app.delete("/api/taste/remove/:id", (req, res) =>
+  tasteController.remove(req, res)
+);
+app.get("/api/taste/list", (req, res) => tasteController.list(req, res));
 app.post("/api/taste/create", (req, res) => tasteController.create(req, res));
 app.put("/api/foodSize/update", (req, res) =>
   foodSizeController.update(req, res)
