@@ -25,7 +25,7 @@ module.exports = {
         const key = process.env.SECRET_KEY;
         const token = jwt.sign(rows, key, { expiresIn: "30d" });
 
-        return res.send({ token: token, name: rows.name });
+        return res.send({ token: token, name: rows.name, id: rows.id });
       }
 
       return res.status(401).send({ message: "unauthorized" });
