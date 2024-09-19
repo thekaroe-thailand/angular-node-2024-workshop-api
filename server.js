@@ -17,6 +17,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("./uploads"));
 
+app.delete("/api/saleTemp/clear/:userId", (req, res) =>
+  saleTempController.clear(req, res)
+);
+app.get("/api/saleTemp/list/:userId", (req, res) =>
+  saleTempController.list(req, res)
+);
 app.post("/api/saleTemp/create", (req, res) =>
   saleTempController.create(req, res)
 );
