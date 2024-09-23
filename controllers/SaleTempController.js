@@ -128,15 +128,15 @@ module.exports = {
       const foodId = req.body.foodId;
       const saleTempId = req.body.saleTempId;
 
-      for (let i = 0; i < qty; i++) {
-        const oldData = await prisma.saleTempDetail.findFirst({
-          where: {
-            foodId: foodId,
-            saleTempId: saleTempId,
-          },
-        });
+      const oldData = await prisma.saleTempDetail.findFirst({
+        where: {
+          foodId: foodId,
+          saleTempId: saleTempId,
+        },
+      });
 
-        if (oldData == null) {
+      if (oldData == null) {
+        for (let i = 0; i < qty; i++) {
           await prisma.saleTempDetail.create({
             data: {
               foodId: foodId,
@@ -154,6 +154,9 @@ module.exports = {
   listSaleTempDetail: async (req, res) => {
     try {
       const rows = await prisma.saleTempDetail.findMany({
+        include: {
+          Food: true,
+        },
         where: {
           saleTempId: parseInt(req.params.saleTempId),
         },
