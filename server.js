@@ -17,6 +17,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("./uploads"));
 
+app.get("/api/saleTemp/listSaleTempDetail/:saleTempId", (req, res) =>
+  saleTempController.listSaleTempDetail(req, res)
+);
+app.post("/api/saleTemp/createDetail", (req, res) =>
+  saleTempController.createDetail(req, res)
+);
 app.put("/api/saleTemp/changeQty", (req, res) =>
   saleTempController.changeQty(req, res)
 );

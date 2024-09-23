@@ -122,4 +122,49 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
+  createDetail: async (req, res) => {
+    try {
+      const qty = req.body.qty;
+      const foodId = req.body.foodId;
+      const saleTempId = req.body.saleTempId;
+
+      for (let i = 0; i < qty; i++) {
+        const oldData = await prisma.saleTempDetail.findFirst({
+          where: {
+            foodId: foodId,
+            saleTempId: saleTempId,
+          },
+        });
+
+        if (oldData == null) {
+          await prisma.saleTempDetail.create({
+            data: {
+              foodId: foodId,
+              saleTempId: saleTempId,
+            },
+          });
+        }
+      }
+
+      return res.send({ message: "success" });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  },
+  listSaleTempDetail: async (req, res) => {
+    try {
+      const rows = await prisma.saleTempDetail.findMany({
+        where: {
+          saleTempId: parseInt(req.params.saleTempId),
+        },
+        orderBy: {
+          id: "desc",
+        },
+      });
+
+      return res.send({ results: rows });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  },
 };

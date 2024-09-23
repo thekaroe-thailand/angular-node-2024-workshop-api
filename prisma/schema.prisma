@@ -62,6 +62,7 @@ model Food {
   status String @default("use") // use, delete 
   FoodType FoodType @relation(fields: [foodTypeId], references: [id])
   SaleTemps SaleTemp[]
+  SaleTempDetails SaleTempDetail[]
 }
 
 model SaleTemp {
@@ -74,6 +75,14 @@ model SaleTemp {
   Food Food @relation(fields: [foodId], references: [id])
 }
 
+model SaleTempDetail {
+  id Int @id() @default(autoincrement())
+  saleTempId Int 
+  addedMoney Int?
+  tasteId Int?
+  foodId Int 
+  Food Food @relation(fields: [foodId], references: [id])
+}
 
 
 
