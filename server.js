@@ -17,6 +17,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("./uploads"));
 
+app.post("/api/saleTemp/updateFoodSize", (req, res) =>
+  saleTempController.updateFoodSize(req, res)
+);
 app.get("/api/saleTemp/listSaleTempDetail/:saleTempId", (req, res) =>
   saleTempController.listSaleTempDetail(req, res)
 );

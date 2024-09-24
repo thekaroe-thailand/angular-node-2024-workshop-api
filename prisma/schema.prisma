@@ -73,6 +73,7 @@ model SaleTemp {
   tableNo Int
   userId Int
   Food Food @relation(fields: [foodId], references: [id])
+  SaleTempDetails SaleTempDetail[]
 }
 
 model SaleTempDetail {
@@ -82,6 +83,7 @@ model SaleTempDetail {
   tasteId Int?
   foodId Int 
   Food Food @relation(fields: [foodId], references: [id])
+  SaleTemp SaleTemp @relation(fields: [saleTempId], references: [id])
 }
 
 
