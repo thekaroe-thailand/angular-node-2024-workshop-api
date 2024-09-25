@@ -166,7 +166,25 @@ module.exports = {
         },
       });
 
-      return res.send({ results: rows });
+      const arr = [];
+
+      for (let i = 0; i < rows.length; i++) {
+        const item = rows[i];
+
+        if (item.tasteId != null) {
+          const taste = await prisma.taste.findFirst({
+            where: {
+              id: item.tasteId
+            }
+          });
+
+          item.tasteName = taste.name
+        }
+
+        arr.push(item);
+      }
+
+      return res.send({ results: arr });
     } catch (e) {
       return res.status(500).send({ error: e.message });
     }
@@ -193,6 +211,49 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
+  updateTaste: async (req, res) => {
+    try {
+      await prisma.saleTempDetail.update({
+        data: {
+          tasteId: req.body.tasteId
+        },
+        where: {
+          id: req.body.saleTempId
+        }
+      })
+
+      return res.send({ message: 'success'})
+    } catch (e) {
+      return res.status(500).send({ error: e.message })
+    }
+  },
+  newSaleTempDetail: async (req, res) => {
+    try {
+      await prisma.saleTempDetail.create({
+        data: {
+          saleTempId: req.body.saleTempId,
+          foodId: req.body.foodId
+        }
+      });
+
+      return res.send({ message: 'success'})
+    } catch (e) {
+      return res.status(500).send({ error: e.message })
+    }
+  },
+  removeSaleTempDetail: async (req, res) => {
+    try {
+      await prisma.saleTempDetail.delete({
+        where: {
+          id: parseInt(req.params.id)
+        }
+      })
+
+      return res.send({ message: 'success' })
+    } catch (e) {
+      return res.status(500).send({ error: e.message })
+    }
+  }
 };
 
 /*

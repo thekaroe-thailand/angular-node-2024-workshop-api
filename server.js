@@ -17,6 +17,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("./uploads"));
 
+//
+// saleTemp
+//
+app.delete('/api/saleTemp/removeSaleTempDetail/:id', (req, res) => saleTempController.removeSaleTempDetail(req, res))
+app.post('/api/saleTemp/newSaleTempDetail', (req, res) => saleTempController.newSaleTempDetail(req, res))
+app.post('/api/saleTemp/updateTaste', (req, res) => saleTempController.updateTaste(req, res))
 app.post("/api/saleTemp/updateFoodSize", (req, res) =>
   saleTempController.updateFoodSize(req, res)
 );
@@ -57,6 +63,7 @@ app.post("/api/food/create", (req, res) => foodController.create(req, res));
 //
 // taste
 //
+app.get('/api/taste/listByFoodTypeId/:foodTypeId', (req, res) => tasteController.listByFoodTypeId(req, res))
 app.put("/api/taste/update", (req, res) => tasteController.update(req, res));
 app.delete("/api/taste/remove/:id", (req, res) =>
   tasteController.remove(req, res)
