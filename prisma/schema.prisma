@@ -20,6 +20,7 @@ model User {
   username String
   password String
   status String @default("use") // use, delete
+  BillSales BillSale[]
 }
 
 model FoodType {
@@ -63,6 +64,7 @@ model Food {
   FoodType FoodType @relation(fields: [foodTypeId], references: [id])
   SaleTemps SaleTemp[]
   SaleTempDetails SaleTempDetail[]
+  BillSaleDetails BillSaleDetail[]
 }
 
 model SaleTemp {
@@ -86,10 +88,43 @@ model SaleTempDetail {
   SaleTemp SaleTemp @relation(fields: [saleTempId], references: [id])
 }
 
+model BillSale {
+  id Int @id() @default(autoincrement())
+  createdDate DateTime @default(now())
+  payDate DateTime @default(now())
+  amount Int
+  payType String
+  userId Int
+  inputMoney Int
+  returnMoney Int
+  tableNo Int
+  status String @default("use")
+  User User @relation(fields: [userId], references: [id])
+  BillSaleDetails BillSaleDetail[]
+}
 
+model BillSaleDetail {
+  id Int @id() @default(autoincrement())
+  billSaleId Int
+  foodId Int
+  foodSizeId Int?
+  tasteId Int?
+  moneyAdded Int?
+  price Int?
+  BillSale BillSale @relation(fields: [billSaleId], references: [id])
+  Food Food @relation(fields: [foodId], references: [id])
+}
 
-
-
-
+model Orgnization {
+  id Int @id() @default(autoincrement())
+  name String 
+  address String 
+  phone String?
+  email String?
+  website String?
+  promptPay String?
+  logo String?
+  taxCode String
+}
 
 //
