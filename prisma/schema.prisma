@@ -115,7 +115,7 @@ model BillSaleDetail {
   Food Food @relation(fields: [foodId], references: [id])
 }
 
-model Orgnization {
+model Organization {
   id Int @id() @default(autoincrement())
   name String 
   address String 

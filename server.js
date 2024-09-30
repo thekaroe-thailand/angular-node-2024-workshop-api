@@ -10,12 +10,20 @@ const foodSizeController = require("./controllers/FoodSizeController");
 const tasteController = require("./controllers/TasteController");
 const foodController = require("./controllers/FoodController");
 const saleTempController = require("./controllers/SaleTempController");
+const organizationController = require('./controllers/OrganizationController');
 
 app.use(cors());
 app.use(fileUpload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("./uploads"));
+
+//
+// organization
+//
+app.post('/api/organization/upload', (req, res) => organizationController.upload(req, res));
+app.post('/api/organization/save', (req, res) => organizationController.create(req, res));
+app.get('/api/organization/info', (req, res) => organizationController.info(req, res));
 
 //
 // saleTemp
