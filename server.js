@@ -28,6 +28,7 @@ app.get('/api/organization/info', (req, res) => organizationController.info(req,
 //
 // saleTemp
 //
+app.post('/api/saleTemp/printBillBeforePay', (req, res) => saleTempController.printBillBeforePay(req, res))
 app.post('/api/saleTemp/endSale', (req, res) => saleTempController.endSale(req, res))
 app.delete('/api/saleTemp/removeSaleTempDetail/:id', (req, res) => saleTempController.removeSaleTempDetail(req, res))
 app.post('/api/saleTemp/newSaleTempDetail', (req, res) => saleTempController.newSaleTempDetail(req, res))

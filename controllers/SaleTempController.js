@@ -270,7 +270,7 @@ module.exports = {
         }
       })
 
-      const billSale = await  prisma.billSale.create({
+      const billSale = await prisma.billSale.create({
         data: {
           amount: req.body.amount,
           inputMoney: req.body.inputMoney,
@@ -333,6 +333,192 @@ module.exports = {
     } catch (e) {
       return res.status(500).send({ error: e.message })
     }
+  },
+  printBillBeforePay: async (req, res) => {
+    try {
+      // organization
+      const organization = await prisma.organization.findFirst();
+
+      // rows in saleTemps
+      const saleTemps = await prisma.saleTemp.findMany({
+        include: {
+          Food: true,
+          SaleTempDetails: true
+        },
+        where: {
+          userId: req.body.userId,
+          tableNo: req.body.tableNo
+        }
+      });
+
+      // create bill by pkfkit
+      const pdfkit = require('pdfkit');
+      const fs = require('fs');
+      const dayjs = require('dayjs');
+
+      const paperWidth = 80;
+      const padding = 3;
+
+      const doc = new pdfkit({
+        size: [paperWidth, 200],
+        margins: {
+          top: 3,
+          bottom: 3,
+          left: 3,
+          right: 3,
+        },
+      });
+      const fileName = `uploads/bill-${dayjs(new Date()).format('YYYYMMDDHHmmss')}.pdf`;
+      const font = 'Kanit/kanit-regular.ttf';
+
+      doc.pipe(fs.createWriteStream(fileName));
+
+      // display logo
+      const imageWidth = 20;
+      const positionX = (paperWidth / 2) - (imageWidth / 2);
+      doc.image('uploads/' + organization.logo, positionX, 5, {
+        align: 'center',
+        width: imageWidth,
+        height: 20
+      })
+      doc.moveDown();
+
+      doc.font(font);
+      doc.fontSize(5).text('*** ใบแจ้งรายการ ***', 20, doc.y + 8);
+      doc.fontSize(8);
+      doc.text(organization.name, padding, doc.y);
+      doc.fontSize(5);
+      doc.text(organization.address);
+      doc.text(`เบอร์โทร: ${organization.phone}`);
+      doc.text(`เลขประจำตัวผู้เสียภาษี: ${organization.taxCode}`);
+      doc.text(`โต๊ะ: ${req.body.tableNo}`, { align: 'center' });
+      doc.text(`วันที่: ${dayjs(new Date()).format('DD/MM/YYYY HH:mm:ss')}`, { align: 'center' });
+      doc.text('รายการอาหาร', { align: 'center' });
+      doc.moveDown();
+
+      const y = doc.y;
+      doc.fontSize(4);
+      doc.text('รายการ', padding, y);
+      doc.text('ราคา', padding + 18, y, { align: 'right', width: 20 });
+      doc.text('จำนวน', padding + 36, y, { align: 'right', width: 20 });
+      doc.text('รวม', padding + 55, y, { align: 'right' });
+
+      // line
+      // set border height
+      doc.lineWidth(0.1);
+      doc.moveTo(padding, y + 6).lineTo(paperWidth - padding, y + 6).stroke();
+
+      // loop saleTemps
+      saleTemps.map((item, index) => {
+        const y = doc.y;
+        doc.text(item.Food.name, padding, y);
+        doc.text(item.Food.price, padding + 18, y, { align: 'right', width: 20 });
+        doc.text(item.qty, padding + 36, y, { align: 'right', width: 20 });
+        doc.text(item.Food.price * item.qty, padding + 55, y, { align: 'right' });
+      });
+
+      // sum amount
+      let sumAmount = 0;
+      saleTemps.forEach((item) => {
+        sumAmount += item.price * item.qty;
+      });
+
+      // display amount
+      doc.text(`รวม: ${sumAmount} บาท`, { align: 'right' });
+      doc.end();
+
+      return res.send({ message: 'success', fileName: fileName });
+    } catch (e) {
+      return res.status(500).send({ error: e.message })
+    }
+    /*
+    try {
+      // organization info
+      const organization = await prisma.organization.findFirst();
+
+      // rows in saleTemps
+      const saleTemps = await prisma.saleTemp.findMany({
+        include: {
+          Food: true,
+          SaleTempDetails: true
+        },
+        where: {
+          userId: req.body.userId,
+          tableNo: req.body.tableNo
+        }
+      })
+
+      // create bill by pdfkit
+      const pdfkit = require("pdfkit");
+      const fs = require("fs");
+      const dayjs = require("dayjs");
+
+      const paperWidth = 80;
+      const padding = 3;
+
+      const doc = new pdfkit({
+        size: [paperWidth, 200],
+        margin: {
+          top: 3,
+          bottom: 3,
+          left: 3,
+          right: 3
+        }
+      })
+
+      const fileName = 'uploads/bill-' + dayjs(new Date()).format("YYYY-MM-DD-HH-mm-ss") + '.pdf';
+      const font = 'Kanit/kanit-regular.ttf';
+
+      doc.pipe(fs.createWriteStream(fileName));
+      doc.font(font);
+      doc.fontSize(8);
+      doc.text(organization.name, padding, 10);
+      /*
+      doc.fontSize(5);
+      doc.text(organization.address);
+      doc.text('เบอร์โทร: ' + organization.phone);
+      doc.text('เลขประจำตัวผู้เสียภาษี: ' + organization.taxCode);
+      doc.text('โต้ะ: ' + req.body.tableNo, { align: 'center' });
+      doc.text('วันที่: ' + dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss"), { align: 'center' });
+      doc.text('รายการอาหาร', { align: 'center' });
+      doc.moveDown();
+
+      const y = doc.y;
+      doc.fontSize(4);
+      doc.text('รายการ', padding, y);
+      doc.text('ราคา', padding + 18, y, { align: 'right', width: 20 });
+      doc.text('จำนวน', padding + 36, y, { align: 'right', width: 20 });
+      doc.text('รวม', padding + 55, y, { align: 'right' });
+
+      // line 
+      doc.lineWidth(0.1);
+      doc.moveTo(padding, y + 6).lineTo(paperWidth - padding, y + 6).stroke();
+
+      // loop saleTemps
+      saleTemps.forEach((item, index) => {
+        const y = doc.y;
+        doc.text(item.Food.name, padding, y);
+        doc.text(item.Food.price, padding + 18, y, { align: 'right', width: 20 });
+        doc.text(item.qty, padding + 36, y, { align: 'right', width: 20 });
+        doc.text(item.Food.price * item.qty, padding + 55, y, { align: 'right' });
+      });
+
+      // sum amount 
+      let sumAmount = 0;
+      saleTemps.forEach((item) => {
+        sumAmount += item.Food.price * item.qty;
+      });
+
+      // dislay sum amount
+      doc.text('รวม' + sumAmount + ' บาท', { align: 'right' });
+      
+      doc.end();
+
+      return res.send({ message: 'success', fileName: fileName });
+    } catch (e) {
+      return res.status(500).send({ error: e.message })
+    }
+    */
   }
 };
 
