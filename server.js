@@ -11,12 +11,18 @@ const tasteController = require("./controllers/TasteController");
 const foodController = require("./controllers/FoodController");
 const saleTempController = require("./controllers/SaleTempController");
 const organizationController = require('./controllers/OrganizationController');
+const billSaleController = require('./controllers/BillSaleController');
 
 app.use(cors());
 app.use(fileUpload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("./uploads"));
+
+//
+// billSale
+//
+app.post('/api/billSale/list', (req, res) => billSaleController.list(req, res))
 
 //
 // organization
@@ -28,6 +34,7 @@ app.get('/api/organization/info', (req, res) => organizationController.info(req,
 //
 // saleTemp
 //
+app.post('/api/saleTemp/printBillAfterPay', (req, res) => saleTempController.printBillAfterPay(req, res))
 app.post('/api/saleTemp/printBillBeforePay', (req, res) => saleTempController.printBillBeforePay(req, res))
 app.post('/api/saleTemp/endSale', (req, res) => saleTempController.endSale(req, res))
 app.delete('/api/saleTemp/removeSaleTempDetail/:id', (req, res) => saleTempController.removeSaleTempDetail(req, res))
