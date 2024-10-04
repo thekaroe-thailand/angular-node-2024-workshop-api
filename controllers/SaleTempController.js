@@ -299,14 +299,27 @@ module.exports = {
             })
           }
         } else {
-          // no details
-          await prisma.billSaleDetail.create({
-            data: {
-              billSaleId: billSale.id,
-              foodId: item.foodId,
-              price: item.Food.price
+          if (item.qty > 0) {
+            // qty > 1
+            for (let j = 0; j < item.qty; j++) {
+              await prisma.billSaleDetail.create({
+                data: {
+                  billSaleId: billSale.id,
+                  foodId: item.foodId,
+                  price: item.Food.price
+                }
+              })
             }
-          })
+          } else {
+            // qty = 1
+            await prisma.billSaleDetail.create({
+              data: {
+                billSaleId: billSale.id,
+                foodId: item.foodId,
+                price: item.Food.price
+              }
+            })
+          }
         }
       }
 
@@ -610,18 +623,23 @@ module.exports = {
         const y = doc.y;
         doc.text(item.Food.name, padding, y);
         doc.text(item.Food.price, padding + 18, y, { align: 'right', width: 20 });
-        doc.text(item.qty, padding + 36, y, { align: 'right', width: 20 });
-        doc.text(item.price * item.qty, padding + 55, y, { align: 'right' });
+        doc.text(1, padding + 36, y, { align: 'right', width: 20 });
+        doc.text(item.price * 1, padding + 55, y, { align: 'right' });
       });
 
       // sum amount
       let sumAmount = 0;
       billSaleDetails.forEach((item) => {
-        sumAmount += item.price * item.qty;
+        sumAmount += item.price * 1;
       });
 
       // display amount
-      doc.text(`รวม: ${sumAmount} บาท`, { align: 'right' });
+      doc.text(`รวม: ${sumAmount}`, padding, doc.y, { align: 'right', width: paperWidth - padding - padding });
+
+      doc.text('รับเงิน ' + billSale.inputMoney, padding, doc.y, { align: 'right', width: paperWidth - padding - padding });
+
+      doc.text('เงินทอน ' + billSale.returnMoney, padding, doc.y, { align: 'right', width: paperWidth - padding - padding });
+
       doc.end();
 
       return res.send({ message: 'success', fileName: fileName });

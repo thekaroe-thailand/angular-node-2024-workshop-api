@@ -12,12 +12,18 @@ const foodController = require("./controllers/FoodController");
 const saleTempController = require("./controllers/SaleTempController");
 const organizationController = require('./controllers/OrganizationController');
 const billSaleController = require('./controllers/BillSaleController');
+const reportController = require('./controllers/ReportController');
 
 app.use(cors());
 app.use(fileUpload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("./uploads"));
+
+// 
+// report
+//
+app.post('/api/report/sumPerDayInYearAndMonth', (req, res) => reportController.sumPerDayInYearAndMonth(req, res));
 
 //
 // billSale
