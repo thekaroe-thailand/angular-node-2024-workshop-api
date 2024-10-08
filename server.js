@@ -24,6 +24,7 @@ app.use("/uploads", express.static("./uploads"));
 // report
 //
 app.post('/api/report/sumPerDayInYearAndMonth', (req, res) => reportController.sumPerDayInYearAndMonth(req, res));
+app.post('/api/report/sumPerMonthInYear', (req, res) => reportController.sumPerMonthInYear(req, res));
 
 //
 // billSale
