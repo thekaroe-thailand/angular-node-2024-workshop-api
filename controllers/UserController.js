@@ -33,4 +33,52 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
+  list: async (req, res) => {
+    try {
+      const users = await prisma.user.findMany({
+        where: {
+          status: "use",
+        },
+        orderBy: {
+          id: "desc",
+        },
+      });
+
+      return res.send({ results: users });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  },
+  create: async (req, res) => {
+    try {
+      await prisma.user.create({
+        data: {
+          username: req.body.username,
+          password: req.body.password,
+          name: req.body.name,
+          level: req.body.level
+        },
+      });
+
+      return res.send({ message: "success" });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  },
+  remove: async (req, res) => {
+    try {
+      await prisma.user.update({
+        where: {
+          id: parseInt(req.params.id)
+        },
+        data: {
+          status: "delete"
+        },
+      });
+
+      return res.send({ message: "success" });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  },
 };
