@@ -77,12 +77,38 @@ module.exports = {
   },
   remove: async (req, res) => {
     try {
-      await prisma.saleTemp.deleteMany({
+      const oldData = await prisma.saleTemp.findFirst({
         where: {
           foodId: parseInt(req.params.foodId),
           userId: parseInt(req.params.userId),
         },
+        include: {
+          SaleTempDetails: true
+        }
       });
+
+      if (oldData.saleTempDetails != null) {
+        await prisma.saleTemp.deleteMany({
+          where: {
+            foodId: parseInt(req.params.foodId),
+            userId: parseInt(req.params.userId),
+          },
+        });
+      } else {
+        // remove from saleTempDetails
+        await prisma.saleTempDetail.deleteMany({
+          where: {
+            saleTempId: oldData.id
+          }
+        })
+
+        // remove from saleTemp
+        await prisma.saleTemp.delete({
+          where: {
+            id: oldData.id
+          }
+        })
+      }
 
       return res.send({ message: "success" });
     } catch (e) {

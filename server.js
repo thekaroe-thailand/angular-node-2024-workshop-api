@@ -43,8 +43,8 @@ function isSignIn(req, res, next) {
 // 
 // report
 //
-app.post('/api/report/sumPerDayInYearAndMonth', isSignIn, (req, res) => reportController.sumPerDayInYearAndMonth(req, res));
-app.post('/api/report/sumPerMonthInYear', isSignIn, (req, res) => reportController.sumPerMonthInYear(req, res));
+app.post('/api/report/sumPerDayInYearAndMonth', (req, res) => reportController.sumPerDayInYearAndMonth(req, res));
+app.post('/api/report/sumPerMonthInYear', (req, res) => reportController.sumPerMonthInYear(req, res));
 
 //
 // billSale
