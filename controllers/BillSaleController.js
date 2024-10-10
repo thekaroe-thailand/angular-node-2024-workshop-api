@@ -26,5 +26,21 @@ module.exports = {
         } catch (e) {
             return res.status(500).send({ error: e.message })
         }
+    },
+    remove: async (req, res) => {
+        try {
+            await prisma.billSale.update({
+                data: {
+                    status: 'delete'
+                },
+                where: {
+                    id: parseInt(req.params.id)
+                }
+            })
+
+            return res.send({ message: "success" })
+        } catch (e) {
+            return res.status(500).send({ error: e.message })
+        }
     }
 }

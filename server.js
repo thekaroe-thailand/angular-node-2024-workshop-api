@@ -50,6 +50,7 @@ app.post('/api/report/sumPerMonthInYear', (req, res) => reportController.sumPerM
 // billSale
 //
 app.post('/api/billSale/list', (req, res) => billSaleController.list(req, res))
+app.delete('/api/billSale/remove/:id', (req, res) => billSaleController.remove(req, res))
 
 //
 // organization
