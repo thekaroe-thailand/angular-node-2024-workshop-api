@@ -3,6 +3,10 @@ const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const userController = require("./controllers/UserController");
 const foodTypeController = require("./controllers/FoodTypeController");
@@ -20,11 +24,27 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("./uploads"));
 
+function isSignIn(req, res, next) {
+  try {
+    const token = req.headers.authorization.split(' ')[1]; // Bearer <token>
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const level = decoded.level;
+
+    if (level !== null) {
+      next();
+    } else {
+      return res.status(401).send({ error: "Unauthorized" });
+    }
+  } catch (e) {
+    return res.status(500).send({ error: e.message });
+  }
+}
+
 // 
 // report
 //
-app.post('/api/report/sumPerDayInYearAndMonth', (req, res) => reportController.sumPerDayInYearAndMonth(req, res));
-app.post('/api/report/sumPerMonthInYear', (req, res) => reportController.sumPerMonthInYear(req, res));
+app.post('/api/report/sumPerDayInYearAndMonth', isSignIn, (req, res) => reportController.sumPerDayInYearAndMonth(req, res));
+app.post('/api/report/sumPerMonthInYear', isSignIn, (req, res) => reportController.sumPerMonthInYear(req, res));
 
 //
 // billSale
@@ -127,6 +147,8 @@ app.post("/api/foodType/create", (req, res) =>
 //
 // user
 //
+app.get("/api/user/getLevelFromToken", (req, res) => userController.getLevelFromToken(req, res));
+app.put("/api/user/update", (req, res) => userController.update(req, res));
 app.delete("/api/user/remove/:id", (req, res) => userController.remove(req, res));
 app.post("/api/user/create", (req, res) => userController.create(req, res));
 app.get("/api/user/list", (req, res) => userController.list(req, res));

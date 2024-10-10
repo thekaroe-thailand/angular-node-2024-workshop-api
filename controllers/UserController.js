@@ -81,4 +81,34 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
+  update: async (req, res) => {
+    try {
+      await prisma.user.update({
+        where: {
+          id: req.body.id
+        },
+        data: {
+          username: req.body.username,
+          password: req.body.password,
+          name: req.body.name,
+          level: req.body.level
+        }
+      });
+
+      return res.send({ message: "success" });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  },
+  getLevelFromToken: async (req, res) => {
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.SECRET_KEY);
+      const level = decoded.level;
+
+      return res.send({ level: level });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  }
 };
