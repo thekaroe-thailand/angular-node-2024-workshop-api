@@ -95,6 +95,7 @@ app.post("/api/saleTemp/create", (req, res) =>
 //
 // food
 //
+app.post("/api/food/listPaginate", (req, res) => foodController.listPaginate(req, res));
 app.get("/api/food/filter/:foodType", (req, res) =>
   foodController.filter(req, res)
 );

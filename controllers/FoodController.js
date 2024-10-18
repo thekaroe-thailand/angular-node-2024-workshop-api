@@ -129,4 +129,30 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
+  listPaginate: async (req, res) => {
+    try {
+      const page = req.body.page ?? 1;
+      const pageSize = req.body.pageSize ?? 10;
+
+      // data
+      const rows = await prisma.food.findMany({
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        where: {
+          status: "use",
+        },
+      });
+
+      // total rows
+      const total = await prisma.food.count({
+        where: {
+          status: "use",
+        },
+      });
+
+      return res.send({ results: rows, total: total });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  },
 };
